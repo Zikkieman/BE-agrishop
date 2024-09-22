@@ -45,4 +45,75 @@ const loginSchema = Joi.object({
   }),
 });
 
-module.exports = { userSchema, loginSchema };
+const productSchema = Joi.object({
+  name: Joi.string().min(3).max(255).required().messages({
+    "string.base": "Product name must be a string.",
+    "string.empty": "Product name is required.",
+    "string.min": "Product name should have a minimum length of 3.",
+    "string.max": "Product name should have a maximum length of 255.",
+    "any.required": "Product name is required.",
+  }),
+
+  description: Joi.string().max(2000).required().messages({
+    "string.base": "Description must be a string.",
+    "string.empty": "Description is required.",
+    "string.max": "Description can be at most 2000 characters long.",
+    "any.required": "Description is required.",
+  }),
+
+  price: Joi.string()
+    .pattern(/^\d+(\.\d{1,2})?$/, "Price must be a valid number")
+    .required()
+    .messages({
+      "string.base": "Price must be a string.",
+      "string.pattern.base":
+        "Price must be a positive number and can have up to two decimal places.",
+      "any.required": "Price is required.",
+    }),
+
+  imageUrl: Joi.string().uri().required().messages({
+    "string.base": "Image URL must be a valid URI.",
+    "string.empty": "Image URL is required.",
+    "any.required": "Image URL is required.",
+  }),
+
+  category: Joi.array()
+    .items(Joi.string().required())
+    .min(1)
+    .required()
+    .messages({
+      "array.base": "Category must be an array.",
+      "array.min": "At least one category is required.",
+      "string.base": "Each category must be a string.",
+      "any.required": "Category is required.",
+    }),
+
+  ratings: Joi.object({
+    averageRating: Joi.string()
+      .pattern(/^[0-5]$/, "Rating must be a number between 0 and 5")
+      .default("0"),
+  }).messages({
+    "object.base": "Ratings must be an object.",
+    "string.pattern.base": "Rating must be a number between 0 and 5",
+  }),
+
+  stock: Joi.string()
+    .required()
+    .pattern(/^\d+(\.\d{1,2})?$/, "Stock must be a valid number")
+    .messages({
+      "string.pattern.base": "Rating must be a number between 0 and 5",
+      "any.required": "Stock is required.",
+    }),
+});
+
+const categorySchema = Joi.object({
+  category: Joi.string().min(1).max(255).required().messages({
+    "string.base": "Category must be a string.",
+    "string.empty": "Category is required.",
+    "string.min": "Category should have a minimum length of 0.",
+    "string.max": "Category should have a maximum length of 255.",
+    "any.required": "Category is required.",
+  }),
+});
+
+module.exports = { userSchema, loginSchema, productSchema, categorySchema };
