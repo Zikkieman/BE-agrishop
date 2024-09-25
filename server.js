@@ -5,6 +5,8 @@ const UserRoutes = require("./route/user/UserRoute.js");
 const AuthRoutes = require("./route/authChecker/AuthRoute.js");
 const ProductRoutes = require("./route/product/Product.js");
 const CategoryRoutes = require("./route/category/Category.js");
+const CartRoutes = require("./route/cart/Cart.js");
+const InfoRoutes = require("./route/billingInfo/BillingInfo.js");
 
 const connectDB = require("./config/database.js");
 const { notFound, errorHandler } = require("./middleware/ErrorHandler.js");
@@ -37,6 +39,8 @@ app.use("/api/v1/user", UserRoutes);
 app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/product", ProductRoutes);
 app.use("/api/v1/category", CategoryRoutes);
+app.use("/api/v1/cart", CartRoutes);
+app.use("/api/v1/info", InfoRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

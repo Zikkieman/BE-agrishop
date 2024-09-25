@@ -2,6 +2,7 @@ const { productSchema } = require("../../model/joi/Joi");
 const {
   addProduct,
   getAllProduct,
+  getOneProduct,
 } = require("../../services/product/ProductService");
 
 class ProductClass {
@@ -20,6 +21,14 @@ class ProductClass {
   static async getAllProduct(req, res, next) {
     try {
       return await getAllProduct(res);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getOneProduct(req, res, next) {
+    try {
+      return await getOneProduct(req, res);
     } catch (error) {
       next(error);
     }

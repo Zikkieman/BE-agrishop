@@ -116,4 +116,53 @@ const categorySchema = Joi.object({
   }),
 });
 
-module.exports = { userSchema, loginSchema, productSchema, categorySchema };
+const deleteFromCartSchema = Joi.object({
+  productId: Joi.string().required().messages({
+    "string.base": "Product ID must be a valid string.",
+    "any.required": "Product ID is required.",
+  }),
+});
+
+const cartItemSchema = Joi.object({
+  productId: Joi.string().required().messages({
+    "string.base": "Product ID must be a valid string.",
+    "any.required": "Product ID is required.",
+  }),
+  quantity: Joi.number().integer().min(1).required().messages({
+    "number.base": "Quantity must be a number.",
+    "number.integer": "Quantity must be an integer.",
+    "number.min": "Quantity must be at least 1.",
+    "any.required": "Quantity is required.",
+  }),
+});
+
+const cartSchema = Joi.object({
+  items: Joi.array().items(cartItemSchema).min(1).required().messages({
+    "array.base": "Items must be an array.",
+    "array.min": "Cart must contain at least one item.",
+    "any.required": "Items are required.",
+  }),
+});
+
+const cartValidation = (cart) => {
+  return cartSchema.validate(cart, { abortEarly: false });
+};
+
+const billingInfoValidationSchema = Joi.object({
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  address: Joi.string().required(),
+  country: Joi.string().required(),
+  state: Joi.string().required(),
+});
+
+module.exports = {
+  userSchema,
+  loginSchema,
+  productSchema,
+  categorySchema,
+  cartValidation,
+  deleteFromCartSchema,
+  cartItemSchema,
+  billingInfoValidationSchema,
+};
