@@ -156,6 +156,14 @@ const billingInfoValidationSchema = Joi.object({
   state: Joi.string().required(),
 });
 
+const favoriteValidationSchema = Joi.object({
+  productId: Joi.string().required(),
+  name: Joi.string().required(),
+  price: Joi.number().required(),
+  imageUrl: Joi.array().required(),
+  stock: Joi.number().required(),
+});
+
 module.exports = {
   userSchema,
   loginSchema,
@@ -165,4 +173,5 @@ module.exports = {
   deleteFromCartSchema,
   cartItemSchema,
   billingInfoValidationSchema,
+  favoriteValidationSchema,
 };

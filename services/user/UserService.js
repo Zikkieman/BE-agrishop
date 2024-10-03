@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
-const sendVerificationEmail = require("../../middleware/SendMail");
+const { sendVerificationEmail } = require("../../middleware/SendMail");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_SECRET;

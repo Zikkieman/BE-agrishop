@@ -93,7 +93,7 @@ const getUserCart = async (req, res) => {
     const cart = await Cart.findOne({ userId }).populate("items.productId");
 
     if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
+      return res.status(404).json({ message: "Your cart is empty" });
     }
 
     let totalAmount = 0;
@@ -107,7 +107,9 @@ const getUserCart = async (req, res) => {
     await cart.save();
     res.status(200).json({ cart, totalAmount });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: "An error occurred while retrieving the cart. Please try again.",
+    });
   }
 };
 
