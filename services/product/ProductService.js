@@ -29,7 +29,62 @@ const addProduct = async (body, res) => {
     });
 
     await product.save();
-    res.status(201).json(product);
+    res.status(201).json({ message: "Product added successfully", product });
+  } catch (error) {
+    res.status(500).json({ message: `Error adding product: ${error.message}` });
+  }
+};
+
+const updateProduct = async (req, res) => {
+  try {
+    const { name, description, price, stock, imageUrl, category, ratings, id } =
+      req;
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    if (category) {
+      const categories = await Category.find({ category: { $in: category } });
+
+      if (categories.length === 0) {
+        return res.status(400).json({ message: "No valid categories found" });
+      }
+      const categoryDetails = categories.map((category) => ({
+        _id: category._id,
+        category: category.category,
+      }));
+
+      product.category = categoryDetails;
+    }
+
+    product.name = name || product.name;
+    product.description = description || product.description;
+    product.price = price || product.price;
+    product.stock = stock || product.stock;
+    product.imageUrl = imageUrl || product.imageUrl;
+    product.ratings = ratings || product.ratings;
+
+    await product.save();
+    res.status(200).json({ message: "Product updated successfully", product });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: `Error updating product: ${error.message}` });
+  }
+};
+
+const deleteProduct = async (req, res) => {
+  try {
+    const { deleteProductId } = req;
+    const product = await Product.findByIdAndDelete(deleteProductId);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -163,4 +218,6 @@ module.exports = {
   addFavoriteProduct,
   deleteFavoriteProduct,
   getFavoriteProducts,
+  updateProduct,
+  deleteProduct,
 };

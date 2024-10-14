@@ -9,6 +9,7 @@ const CartRoutes = require("./route/cart/Cart.js");
 const InfoRoutes = require("./route/billingInfo/BillingInfo.js");
 const PaymentRoutes = require("./route/paystack/Paystack.js");
 const OrderRoutes = require("./route/order/Order.js");
+const TagRoutes = require("./route/tag/Tag.js");
 
 const connectDB = require("./config/database.js");
 const { notFound, errorHandler } = require("./middleware/ErrorHandler.js");
@@ -45,6 +46,7 @@ app.use("/api/v1/cart", CartRoutes);
 app.use("/api/v1/info", InfoRoutes);
 // app.use("/api/v1/payment", PaymentRoutes);
 app.use("/api/v1/order", OrderRoutes);
+app.use("/api/v1/tag", TagRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

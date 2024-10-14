@@ -1,5 +1,8 @@
 const { categorySchema } = require("../../model/joi/Joi");
-const { addCategory } = require("../../services/category/CategoryService");
+const {
+  addCategory,
+  getCategories,
+} = require("../../services/category/CategoryService");
 
 class CategoryClass {
   static async addCategory(request, res, next) {
@@ -13,6 +16,14 @@ class CategoryClass {
       next(error);
     }
   }
+
+  static getCategories = async (request, res, next) => {
+    try {
+      return await getCategories(request, res);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = CategoryClass;

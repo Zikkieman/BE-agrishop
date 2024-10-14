@@ -45,6 +45,124 @@ const loginSchema = Joi.object({
   }),
 });
 
+const updateProductSchema = Joi.object({
+  name: Joi.string().min(3).max(255).required().messages({
+    "string.base": "Product name must be a string.",
+    "string.empty": "Product name is required.",
+    "string.min": "Product name should have a minimum length of 3.",
+    "string.max": "Product name should have a maximum length of 255.",
+    "any.required": "Product name is required.",
+  }),
+
+  id: Joi.string().required().messages({
+    "string.base": "id must be a string.",
+    "string.empty": "id is required.",
+    "any.required": "id is required.",
+  }),
+
+  description: Joi.string().max(2000).required().messages({
+    "string.base": "Description must be a string.",
+    "string.empty": "Description is required.",
+    "string.max": "Description can be at most 2000 characters long.",
+    "any.required": "Description is required.",
+  }),
+
+  stock: Joi.alternatives()
+    .try(
+      Joi.string()
+        .pattern(/^\d+(\.\d{1,2})?$/, "Stock must be a valid number")
+        .messages({
+          "string.base": "Stock must be a string.",
+          "string.pattern.base":
+            "Stock must be a positive number and can have up to two decimal places.",
+        }),
+      Joi.number().positive().precision(2).messages({
+        "number.base": "Stock must be a valid number.",
+        "number.positive": "Stock must be a positive number.",
+        "number.precision": "Stock can have up to two decimal places.",
+      })
+    )
+    .required()
+    .messages({
+      "any.required": "Stock is required.",
+    }),
+
+  price: Joi.alternatives()
+    .try(
+      Joi.number().positive().precision(2).messages({
+        "number.base": "Price must be a number.",
+        "number.positive": "Price must be a positive number.",
+        "number.precision": "Price can have up to two decimal places.",
+        "any.required": "Price is required.",
+      }),
+      Joi.string()
+        .pattern(/^\d+(\.\d{1,2})?$/, "Price must be a valid number")
+        .messages({
+          "string.base": "Price must be a string.",
+          "string.pattern.base":
+            "Price must be a positive number and can have up to two decimal places.",
+        })
+    )
+    .required()
+    .messages({
+      "any.required": "Price is required.",
+    }),
+
+  imageUrl: Joi.string().uri().required().messages({
+    "string.base": "Image URL must be a valid URI.",
+    "string.empty": "Image URL is required.",
+    "any.required": "Image URL is required.",
+  }),
+
+  category: Joi.array()
+    .items(Joi.string().required())
+    .min(1)
+    .required()
+    .messages({
+      "array.base": "Category must be an array.",
+      "array.min": "At least one category is required.",
+      "string.base": "Each category must be a string.",
+      "any.required": "Category is required.",
+    }),
+
+  tag: Joi.array().items(Joi.string().required()).min(1).required().messages({
+    "array.base": "Tag must be an array.",
+    "array.min": "At least on tag is required.",
+    "string.base": "Each Tag must be a string",
+    "any.required": "Tag is required",
+  }),
+
+  ratings: Joi.object({
+    averageRating: Joi.string()
+      .pattern(/^[0-5]$/, "Rating must be a number between 0 and 5")
+      .default("0"),
+  }).messages({
+    "object.base": "Ratings must be an object.",
+    "string.pattern.base": "Rating must be a number between 0 and 5",
+  }),
+});
+
+const deleteProductSchema = Joi.object({
+  deleteProductId: Joi.string().required().messages({
+    "string.base": "id must be a string.",
+    "string.empty": "id is required.",
+    "any.required": "id is required.",
+  }),
+});
+
+const updatePaymentSchema = Joi.object({
+  orderId: Joi.string().required().messages({
+    "string.base": "id must be a string.",
+    "string.empty": "id is required.",
+    "any.required": "id is required.",
+  }),
+  paymentStatus: Joi.string().required().messages({
+    "string.base": "paymentStatus must be a string.",
+    "string.empty": "paymentStatus is required.",
+    "any.required": "paymentStatus is required.",
+  }),
+});
+
 const productSchema = Joi.object({
   name: Joi.string().min(3).max(255).required().messages({
     "string.base": "Product name must be a string.",
@@ -87,6 +205,13 @@ const productSchema = Joi.object({
       "string.base": "Each category must be a string.",
       "any.required": "Category is required.",
     }),
+
+  tag: Joi.array().items(Joi.string().required()).min(1).required().messages({
+    "array.base": "Tag must be an array.",
+    "array.min": "At least on tag is required.",
+    "string.base": "Each Tag must be a string",
+    "any.required": "Tag is required",
+  }),
 
   ratings: Joi.object({
     averageRating: Joi.string()
@@ -174,4 +299,7 @@ module.exports = {
   cartItemSchema,
   billingInfoValidationSchema,
   favoriteValidationSchema,
+  updateProductSchema,
+  deleteProductSchema,
+  updatePaymentSchema,
 };

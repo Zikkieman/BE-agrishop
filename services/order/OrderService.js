@@ -154,6 +154,42 @@ const paystackWebhook = async (req, res) => {
   }
 };
 
+const updatePayment = async (req, res) => {
+  const { orderId, paymentStatus } = req.body;
+
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.paymentStatus === paymentStatus) {
+      return res
+        .status(200)
+        .json({ message: "Payment status is already up-to-date." });
+    }
+
+    order.paymentStatus = paymentStatus;
+
+    if (paymentStatus === "completed") {
+      order.status = "processing";
+    }
+
+    if (paymentStatus === "pending") {
+      order.status = "pending";
+    }
+
+    await order.save();
+
+    res
+      .status(200)
+      .json({ message: `Payment status updated to ${paymentStatus}` });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 const checkOrderStatus = async (req, res) => {
   try {
     const reference = req.cookies.transaction_reference;
@@ -197,7 +233,11 @@ const getUserOrders = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 }).exec();
+    const orders = await Order.find()
+      .populate("user", "email phoneNumber")
+      .populate("items.productId", "name imageUrl price description stock")
+      .sort({ createdAt: -1 })
+      .exec();
 
     if (orders.length === 0) {
       return res.status(404).json({ message: "Orders not found" });
@@ -214,4 +254,5 @@ module.exports = {
   checkOrderStatus,
   getAllOrders,
   getUserOrders,
+  updatePayment,
 };

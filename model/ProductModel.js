@@ -29,6 +29,16 @@ const productSchema = new mongoose.Schema(
         category: { type: String, required: true },
       },
     ],
+    tag: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Tag", // Ensure consistency in casing
+          required: true,
+        },
+        tag: { type: String, required: true },
+      },
+    ],
     stock: {
       type: Number,
       required: true,

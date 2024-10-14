@@ -1,9 +1,11 @@
+const { updatePaymentSchema } = require("../../model/joi/Joi");
 const {
   createOrder,
   paystackWebhook,
   checkOrderStatus,
   getUserOrders,
   getAllOrders,
+  updatePayment,
 } = require("../../services/order/OrderService");
 
 class OrderClass {
@@ -26,6 +28,18 @@ class OrderClass {
   static async orderStatus(req, res, next) {
     try {
       return await checkOrderStatus(req, res);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async updatePayment(req, res, next) {
+    try {
+      const { error } = updatePaymentSchema.validate(req.body);
+      if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+      }
+      return await updatePayment(req, res);
     } catch (error) {
       next(error);
     }

@@ -1,6 +1,8 @@
 const {
   productSchema,
   favoriteValidationSchema,
+  updateProductSchema,
+  deleteProductSchema,
 } = require("../../model/joi/Joi");
 const {
   addProduct,
@@ -9,6 +11,8 @@ const {
   addFavoriteProduct,
   deleteFavoriteProduct,
   getFavoriteProducts,
+  updateProduct,
+  deleteProduct,
 } = require("../../services/product/ProductService");
 
 class ProductClass {
@@ -19,6 +23,30 @@ class ProductClass {
         return res.status(400).json({ message: error.details[0].message });
       }
       return await addProduct(request.body, res);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async updateProduct(req, res, next) {
+    try {
+      const { error } = updateProductSchema.validate(req.body);
+      if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+      }
+      return await updateProduct(req.body, res);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async deleteProduct(req, res, next) {
+    try {
+      const { error } = deleteProductSchema.validate(req.body);
+      if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+      }
+      return await deleteProduct(req.body, res);
     } catch (error) {
       next(error);
     }
