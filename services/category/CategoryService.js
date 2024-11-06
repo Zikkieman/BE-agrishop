@@ -1,4 +1,5 @@
 const Category = require("../../model/CategoryModel");
+const Product = require("../../model/ProductModel");
 
 const addCategory = async (request, res) => {
   const { category } = request.body;
@@ -11,26 +12,39 @@ const addCategory = async (request, res) => {
   }
 };
 
-const updateCategory = async (request, res) => {
+const updateCategory = async (req, res) => {
   try {
-    const { id } = request.params;
-    const { name } = request.body;
+    const { category } = req.body;
+    const { id } = req.params;
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
-      { name },
+      { category },
       { new: true }
     );
+
+    if (!updatedCategory) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
     res.status(200).json(updatedCategory);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-const deleteCategory = async (request, res) => {
+const deleteCategory = async (req, res) => {
   try {
-    const { id } = request.params;
-    await Category.findByIdAndDelete(id);
-    res.status(200).json({ message: "Category deleted" });
+    const { id } = req.params;
+
+    const categoryToDelete = await Category.findById(id);
+    if (!categoryToDelete) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    await Category.deleteOne({ _id: id });
+    res
+      .status(200)
+      .json({ message: "Category and associated products updated" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

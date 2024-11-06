@@ -9,5 +9,5 @@ router.get("/payment-status", OrderClass.orderStatus);
 router.get("/get-user-orders", verifyToken, OrderClass.userOrders);
 router.get("/get-all-orders", verifyToken, OrderClass.allOrders);
 router.post("/update-payment", verifyToken, OrderClass.updatePayment);
-
+router.post("/update-status", verifyToken, OrderClass.updateStatus);
 module.exports = router;

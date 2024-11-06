@@ -33,6 +33,28 @@ const userSchema = Joi.object({
   }),
 });
 
+const newPasswordSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "string.email": "Invalid email address",
+    "any.required": "Email is required",
+  }),
+  password: Joi.string().min(6).required().messages({
+    "string.min": "Password must be at least 6 characters long",
+    "any.required": "Password is required",
+  }),
+  confirmPassword: Joi.any().equal(Joi.ref("password")).required().messages({
+    "any.only": "Passwords must match",
+    "any.required": "Confirm password is required",
+  }),
+});
+
+const recoveryEmailSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "string.email": "Invalid email address",
+    "any.required": "Email is required",
+  }),
+});
+
 const loginSchema = Joi.object({
   email: Joi.string().email().required().messages({
     "string.email": "Invalid email address",
@@ -42,6 +64,28 @@ const loginSchema = Joi.object({
   password: Joi.string().min(6).required().messages({
     "string.min": "Password must be at least 6 characters long",
     "any.required": "Password is required",
+  }),
+});
+
+const ContactSchema = Joi.object({
+  fullName: Joi.string().min(2).required().messages({
+    "string.base": "First name must be a string",
+    "string.min": "First name must be at least 2 characters long",
+    "any.required": "First name is required",
+  }),
+  email: Joi.string().email().required().messages({
+    "string.email": "Invalid email address",
+    "any.required": "Email is required",
+  }),
+  message: Joi.string().max(2000).required().messages({
+    "string.base": "Message must be a string.",
+    "string.empty": "Message is required.",
+    "string.max": "Message can be at most 2000 characters long.",
+    "any.required": "Message is required.",
+  }),
+  phoneNumber: Joi.string().pattern(/^\d+$/).required().messages({
+    "string.pattern.base": "Phone number must contain only digits",
+    "any.required": "Phone number is required",
   }),
 });
 
@@ -163,6 +207,19 @@ const updatePaymentSchema = Joi.object({
   }),
 });
 
+const updateStatusSchema = Joi.object({
+  orderId: Joi.string().required().messages({
+    "string.base": "id must be a string.",
+    "string.empty": "id is required.",
+    "any.required": "id is required.",
+  }),
+  status: Joi.string().required().messages({
+    "string.base": "paymentStatus must be a string.",
+    "string.empty": "paymentStatus is required.",
+    "any.required": "paymentStatus is required.",
+  }),
+});
+
 const productSchema = Joi.object({
   name: Joi.string().min(3).max(255).required().messages({
     "string.base": "Product name must be a string.",
@@ -241,6 +298,20 @@ const categorySchema = Joi.object({
   }),
 });
 
+const updateCategorySchema = Joi.object({
+  category: Joi.string().required().messages({
+    "string.base": "category must be a valid string.",
+    "any.required": "category is required.",
+  }),
+});
+
+const updateTagSchema = Joi.object({
+  tag: Joi.string().required().messages({
+    "string.base": "tag must be a valid string.",
+    "any.required": "tag is required.",
+  }),
+});
+
 const deleteFromCartSchema = Joi.object({
   productId: Joi.string().required().messages({
     "string.base": "Product ID must be a valid string.",
@@ -302,4 +373,10 @@ module.exports = {
   updateProductSchema,
   deleteProductSchema,
   updatePaymentSchema,
+  ContactSchema,
+  recoveryEmailSchema,
+  newPasswordSchema,
+  updateStatusSchema,
+  updateCategorySchema,
+  updateTagSchema,
 };

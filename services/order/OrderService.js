@@ -8,25 +8,13 @@ const Cart = require("../../model/CartModel");
 
 const createOrder = async (req, res) => {
   try {
-    const order = new Order({
-      user: req.user.id,
-      items: req.body.items,
-      totalAmount: req.body.totalAmount,
-      billingInfo: req.body.billingInfo,
-      additionalInfo: req.body.additionalInfo,
-      paymentStatus: "pending",
-      status: "pending",
-    });
-
-    const savedOrder = await order.save();
-
     const response = await axios.post(
       `${paystackBaseUrl}/transaction/initialize`,
       {
         email: req.user.email,
         amount: req.body.totalAmount * 100,
         metadata: {
-          id: savedOrder._id,
+          userId: req.user.id,
         },
       },
       {
@@ -37,17 +25,31 @@ const createOrder = async (req, res) => {
       }
     );
 
-    savedOrder.reference = response.data.data.reference;
-    await savedOrder.save();
+    if (!response.data.status) {
+      return res.status(400).json({ message: "Failed to initialize payment" });
+    }
 
-    const result = await Cart.deleteOne({ userId: req.user.id });
+    const order = new Order({
+      user: req.user.id,
+      items: req.body.items,
+      totalAmount: req.body.totalAmount,
+      billingInfo: req.body.billingInfo,
+      additionalInfo: req.body.additionalInfo,
+      paymentStatus: "pending",
+      status: "pending",
+      reference: response.data.data.reference,
+    });
+
+    const savedOrder = await order.save();
+
+    await Cart.deleteOne({ userId: req.user.id });
 
     const userEmailHtml = `
-          <p>Your order has been created successfully!</p>
-          <p>Order ID: ${savedOrder._id}</p>
-          <p>Total Amount: ₦${savedOrder.totalAmount}</p>
-          <p>Thank you for your order! Please complete your payment on the website.</p>
-        `;
+      <p>Your order has been created successfully!</p>
+      <p>Order ID: ${savedOrder._id}</p>
+      <p>Total Amount: ₦${savedOrder.totalAmount}</p>
+      <p>Thank you for your order! Please complete your payment on the website.</p>
+    `;
 
     await sendEmail({
       to: req.user.email,
@@ -56,12 +58,15 @@ const createOrder = async (req, res) => {
     });
 
     const adminEmailHtml = `
-          <p>New order created</p>
-          <p>User: ${req.user.email}</p>
-          <p>Order ID: ${savedOrder._id}</p>
-          <p>Total Amount: ₦${savedOrder.totalAmount}</p>
-          <p>Payment Status: ${savedOrder.paymentStatus}</p>
-        `;
+      <p>New order created</p>
+      <p>User Email: ${req.user.email}</p>
+      <p>User Name: ${savedOrder.billingInfo.firstName} ${savedOrder.billingInfo.lastName}</p>
+      <p>Address: ${savedOrder.billingInfo.address}, ${savedOrder.billingInfo.state}, ${savedOrder.billingInfo.country}</p>
+      <p>Additional Information: ${savedOrder.additionalInfo}</p>
+      <p>Order ID: ${savedOrder._id}</p>
+      <p>Total Amount: ₦${savedOrder.totalAmount}</p>
+      <p>Payment Status: ${savedOrder.paymentStatus}</p>
+    `;
 
     await sendEmail({
       to: "horlarmeydeileh50@gmail.com",
@@ -190,6 +195,34 @@ const updatePayment = async (req, res) => {
   }
 };
 
+const updateStatus = async (req, res) => {
+  const { orderId, status } = req.body;
+
+  try {
+    const savedOrder = await Order.findById(orderId);
+
+    if (!savedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (savedOrder.status === status) {
+      return res
+        .status(200)
+        .json({ message: "Order status is already up-to-date." });
+    }
+
+    savedOrder.status = status;
+    await savedOrder.save();
+
+    return res
+      .status(200)
+      .json({ message: `Order status updated to ${status}` });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 const checkOrderStatus = async (req, res) => {
   try {
     const reference = req.cookies.transaction_reference;
@@ -255,4 +288,5 @@ module.exports = {
   getAllOrders,
   getUserOrders,
   updatePayment,
+  updateStatus,
 };

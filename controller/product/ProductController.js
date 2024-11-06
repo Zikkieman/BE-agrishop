@@ -74,7 +74,7 @@ class ProductClass {
 
   static async getAllProduct(req, res, next) {
     try {
-      return await getAllProduct(res);
+      return await getAllProduct(req, res);
     } catch (error) {
       next(error);
     }

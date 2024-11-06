@@ -22,5 +22,19 @@ tagSchema.pre("findOneAndDelete", async function (next) {
   next();
 });
 
+tagSchema.pre("findOneAndUpdate", async function (next) {
+  const tagId = this.getQuery()._id;
+  const update = this.getUpdate();
+  const newTag = update.tag;
+
+  if (newTag) {
+    await mongoose
+      .model("Product")
+      .updateMany({ "tag._id": tagId }, { $set: { "tag.$.tag": newTag } });
+  }
+
+  next();
+});
+
 const Tag = mongoose.models.Tag ?? mongoose.model("Tag", tagSchema);
 module.exports = Tag;

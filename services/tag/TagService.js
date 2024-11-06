@@ -20,8 +20,8 @@ const addTag = async (req, res) => {
 };
 
 const updateTag = async (req, res) => {
-  const { id, tag } = req.body;
-
+  const { tag } = req.body;
+  const { id } = req.params;
   try {
     const updatedTag = await Tag.findByIdAndUpdate(
       id,
@@ -40,7 +40,7 @@ const updateTag = async (req, res) => {
 };
 
 const deleteTag = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
 
   try {
     const deletedTag = await Tag.findByIdAndDelete(id);
@@ -48,11 +48,6 @@ const deleteTag = async (req, res) => {
     if (!deletedTag) {
       return res.status(404).json({ message: "Tag not found" });
     }
-
-    await Product.updateMany(
-      { "tag._id": id },
-      { $pull: { tag: { _id: id } } }
-    );
 
     res.status(200).json({ message: "Tag deleted and removed from products" });
   } catch (error) {

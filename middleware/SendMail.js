@@ -3,9 +3,8 @@ const nodemailer = require("nodemailer");
 
 const appPassword = process.env.APP_PASSWORD;
 const sender = process.env.EMAIL_SENDER;
-const BASE_URL = process.env.BASE_URL;
 
-const sendVerificationEmail = async (email, token) => {
+const sendVerificationEmail = async (email, verificationUrl) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
@@ -17,7 +16,6 @@ const sendVerificationEmail = async (email, token) => {
     },
   });
 
-  const verificationUrl = `${BASE_URL}/verify-email?token=${token}`;
   const mailOptions = {
     from: '"Agrishop" horlameydeileh50@gmail.com',
     to: email,

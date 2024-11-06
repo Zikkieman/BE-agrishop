@@ -1,21 +1,40 @@
 const Category = require("../../model/CategoryModel");
 const Favorite = require("../../model/FavoriteModel");
 const Product = require("../../model/ProductModel");
+const Tag = require("../../model/TagModel");
 
 const addProduct = async (body, res) => {
   try {
-    const { name, description, price, stock, imageUrl, category, ratings } =
-      body;
+    const {
+      name,
+      description,
+      price,
+      stock,
+      imageUrl,
+      category,
+      ratings,
+      tag,
+    } = body;
 
     const categories = await Category.find({ category: { $in: category } });
+    const tags = await Tag.find({ tag: { $in: tag } });
 
     if (categories.length === 0) {
       return res.status(400).json({ message: "No valid categories found" });
     }
 
+    if (tags.length === 0) {
+      return res.status(400).json({ message: "No valid tags found" });
+    }
+
     const categoryDetails = categories.map((category) => ({
       _id: category._id,
       category: category.category,
+    }));
+
+    const tagDetails = tags.map((tag) => ({
+      _id: tag._id,
+      tag: tag.tag,
     }));
 
     const product = new Product({
@@ -26,6 +45,7 @@ const addProduct = async (body, res) => {
       imageUrl,
       category: categoryDetails,
       ratings,
+      tag: tagDetails,
     });
 
     await product.save();
@@ -37,10 +57,20 @@ const addProduct = async (body, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const { name, description, price, stock, imageUrl, category, ratings, id } =
-      req;
+    const {
+      name,
+      description,
+      price,
+      stock,
+      imageUrl,
+      category,
+      ratings,
+      id,
+      tag,
+    } = req;
 
     const product = await Product.findById(id);
+
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -57,6 +87,21 @@ const updateProduct = async (req, res) => {
       }));
 
       product.category = categoryDetails;
+    }
+
+    if (tag) {
+      const tags = await Tag.find({ tag: { $in: tag } });
+
+      if (tags.length === 0) {
+        return res.status(400).json({ message: "No valid tags found" });
+      }
+
+      const tagDetails = tags.map((tag) => ({
+        _id: tag._id,
+        tag: tag.tag,
+      }));
+
+      product.tag = tagDetails;
     }
 
     product.name = name || product.name;
@@ -90,12 +135,55 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-const getAllProduct = async (res) => {
+const getAllProduct = async (req, res) => {
   try {
-    const products = await Product.find();
+    const { categories, tags, ratings } = req.query;
+    const filter = {};
+
+    if (categories) {
+      const categoryArr = categories.split(",");
+      const categoryIds = await Category.find({
+        category: { $in: categoryArr },
+      }).select("_id");
+
+      if (categoryIds.length > 0) {
+        filter["category._id"] = { $in: categoryIds };
+      } else {
+        return res.status(400).json({ message: "No valid categories found" });
+      }
+    }
+
+    if (tags) {
+      const tagArr = tags.split(",");
+      const tagIds = await Tag.find({ tag: { $in: tagArr } }).select("_id");
+
+      if (tagIds.length > 0) {
+        filter["tag._id"] = { $in: tagIds };
+      } else {
+        return res.status(400).json({ message: "No valid tags found" });
+      }
+    }
+
+    if (ratings) {
+      const ratingValue = parseInt(ratings, 10);
+      if (!isNaN(ratingValue) && ratingValue >= 1 && ratingValue <= 5) {
+        filter["ratings.averageRating"] = { $gte: ratingValue };
+      } else {
+        return res.status(400).json({ message: "Invalid rating value" });
+      }
+    }
+
+    const products = await Product.find(filter);
+
+    if (products.length === 0) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
     res.status(200).json(products);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res
+      .status(500)
+      .json({ message: `Error fetching products: ${error.message}` });
   }
 };
 
