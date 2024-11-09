@@ -137,7 +137,7 @@ const deleteProduct = async (req, res) => {
 
 const getAllProduct = async (req, res) => {
   try {
-    const { categories, tags, ratings } = req.query;
+    const { categories, tags, ratings, search } = req.query;
     const filter = {};
 
     if (categories) {
@@ -145,7 +145,6 @@ const getAllProduct = async (req, res) => {
       const categoryIds = await Category.find({
         category: { $in: categoryArr },
       }).select("_id");
-
       if (categoryIds.length > 0) {
         filter["category._id"] = { $in: categoryIds };
       } else {
@@ -156,7 +155,6 @@ const getAllProduct = async (req, res) => {
     if (tags) {
       const tagArr = tags.split(",");
       const tagIds = await Tag.find({ tag: { $in: tagArr } }).select("_id");
-
       if (tagIds.length > 0) {
         filter["tag._id"] = { $in: tagIds };
       } else {
@@ -171,6 +169,14 @@ const getAllProduct = async (req, res) => {
       } else {
         return res.status(400).json({ message: "Invalid rating value" });
       }
+    }
+
+    // Add search filter
+    if (search) {
+      filter.$or = [
+        { name: new RegExp(search, "i") },
+        { description: new RegExp(search, "i") },
+      ];
     }
 
     const products = await Product.find(filter);
