@@ -58,7 +58,7 @@ const registerUser = async (body, res) => {
       lastName,
       termsAccepted,
       isVerified: false,
-      role: "admin",
+      role: "user",
     });
 
     const savedUser = await user.save();
