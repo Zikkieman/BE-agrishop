@@ -17,7 +17,10 @@ const { notFound, errorHandler } = require("./middleware/ErrorHandler.js");
 const app = express();
 const port = 5000;
 
-const allowedOrigins = ["http://localhost:5173", "https://yourdomain.com"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://agrishop-five.vercel.app",
+];
 
 app.use(
   cors({
