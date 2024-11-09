@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const newUser = require("../../model/UserModel");
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_SECRET;
 
@@ -6,13 +7,50 @@ const authCheck = async (req, res) => {
   const token = req.cookies.accessToken;
 
   if (!token) {
-    return res.status(403).json({ message: "Not authenticated" });
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) {
+      return res.status(403).json({ message: "Not authenticated" });
+    }
+
+    try {
+      const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+      const userEmail = decoded.email;
+
+      const user = await newUser.findOne({ email: userEmail });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const userNames = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+      };
+      return res
+        .status(200)
+        .json({ message: "Authenticated via refresh token", userNames });
+    } catch (err) {
+      console.error(err);
+      return res.status(403).json({ message: "Token expired or invalid" });
+    }
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    return res.status(200).json({ message: "Authenticated", user: decoded });
+    const userEmail = decoded.email;
+
+    const user = await newUser.findOne({ email: userEmail });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const userNames = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
+
+    return res.status(200).json({ message: "Authenticated", userNames });
   } catch (err) {
+    console.error(err);
     return res.status(403).json({ message: "Token expired or invalid" });
   }
 };
