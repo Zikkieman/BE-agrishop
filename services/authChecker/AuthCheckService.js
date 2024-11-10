@@ -79,7 +79,7 @@ const refreshAccessToken = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 15 * 60 * 1000,
-      sameSite: "Strict",
+      sameSite: "none",
     });
 
     res.status(200).json({ message: "Token refreshed" });
@@ -94,13 +94,13 @@ const logout = (req, res) => {
   res.clearCookie("accessToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "none",
   });
 
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "none",
   });
   res.status(200).json({ message: "Logout successful" });
 };

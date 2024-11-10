@@ -77,7 +77,7 @@ const createOrder = async (req, res) => {
     res.cookie("transaction_reference", savedOrder.reference, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
     });
 
     return res.status(200).json({

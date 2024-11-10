@@ -35,6 +35,7 @@ const verifyToken = async (req, res, next) => {
       res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // Set `secure` flag in production
+        sameSite: "None",
       });
 
       // Attach user info to the request and proceed
