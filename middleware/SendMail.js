@@ -17,7 +17,7 @@ const sendVerificationEmail = async (email, verificationUrl) => {
   });
 
   const mailOptions = {
-    from: '"Agrishop" horlameydeileh50@gmail.com',
+    from: `"AOA PRODUCE" <${sender}>`,
     to: email,
     subject: "Email Verification",
     html: `<p>Please verify your email by clicking the link below:</p>
@@ -40,7 +40,7 @@ const sendEmail = async ({ to, subject, html }) => {
   });
 
   const mailOptions = {
-    from: `"Agrishop" <${sender}>`,
+    from: `"AOA PRODUCE" <${sender}>`,
     to,
     subject,
     html,
