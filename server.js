@@ -18,7 +18,10 @@ const app = express();
 const port = 5000;
 app.options("*", cors());
 
-const allowedOrigins = ["*"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://agrishop-five.vercel.app",
+];
 
 app.use(
   cors({
