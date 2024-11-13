@@ -16,6 +16,7 @@ const { notFound, errorHandler } = require("./middleware/ErrorHandler.js");
 
 const app = express();
 const port = 5000;
+app.options("*", cors());
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -32,7 +33,7 @@ app.use(
       }
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "origin"],
     credentials: true,
   })
 );
