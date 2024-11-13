@@ -25,15 +25,16 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    // origin: function (origin, callback) {
+    //   if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    //     callback(null, true);
+    //   } else {
+    //     callback(new Error("Not allowed by CORS"));
+    //   }
+    // },
+    allowedOrigins: ["*"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization", "origin"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
