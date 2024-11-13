@@ -16,7 +16,6 @@ const { notFound, errorHandler } = require("./middleware/ErrorHandler.js");
 
 const app = express();
 const port = 5000;
-app.options("*", cors());
 
 const allowedOrigins = [
   "http://localhost:5173",
