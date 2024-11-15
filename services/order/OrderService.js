@@ -74,12 +74,6 @@ const createOrder = async (req, res) => {
       html: adminEmailHtml,
     });
 
-    res.cookie("transaction_reference", savedOrder.reference, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-
     return res.status(200).json({
       status: true,
       message: "Order created and payment initialized",
@@ -154,7 +148,6 @@ const paystackWebhook = async (req, res) => {
 
     res.status(200).send();
   } catch (error) {
-    console.error("Error updating order:", error);
     res.status(500).send("Server Error");
   }
 };

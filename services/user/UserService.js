@@ -110,41 +110,16 @@ const loginUser = async (body, res) => {
     const accessToken = jwt.sign(
       { email: user.email, id: user._id },
       JWT_SECRET,
-      {
-        expiresIn: "15m",
-      }
+      { expiresIn: "3d" } // Set the token to expire in 3 days
     );
 
-    const refreshToken = jwt.sign(
-      { email: user.email, id: user._id },
-      JWT_REFRESH_SECRET,
-      {
-        expiresIn: "7d",
-      }
-    );
-
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000,
-      sameSite: "None",
-    });
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: "None",
-    });
-
+    // Return the token and user info in the response
     return res.status(200).json({
       message: "Login successful",
+      accessToken,
       user: {
-        id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
         role: user.role,
       },
     });

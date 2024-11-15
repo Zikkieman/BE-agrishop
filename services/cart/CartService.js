@@ -87,7 +87,6 @@ const deleteFromCart = async (req, res) => {
 
 const getUserCart = async (req, res) => {
   const { id: userId } = req.user;
-
   try {
     const cart = await Cart.findOne({ userId }).populate("items.productId");
 
