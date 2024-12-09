@@ -12,6 +12,7 @@ const Contact = require("../../model/ContactModel");
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_SECRET;
 const BASE_URL = process.env.BASE_URL;
+const adminEmail = process.env.EMAIL_SENDER;
 
 const registerUser = async (body, res) => {
   const {
@@ -239,7 +240,7 @@ const sendContact = async (req, res) => {
     `;
 
     await sendEmail({
-      to: "horlarmeydeileh50@gmail.com",
+      to: `${adminEmail}`,
       subject: "New Contact Message from Agrishop",
       html: adminHtml,
     });

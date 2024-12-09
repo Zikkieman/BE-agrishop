@@ -5,6 +5,7 @@ const paystackBaseUrl = process.env.PAYSTACK_BASEURL;
 const crypto = require("crypto");
 const { sendEmail } = require("../../middleware/SendMail");
 const Cart = require("../../model/CartModel");
+const adminEmail = process.env.EMAIL_SENDER;
 
 const createOrder = async (req, res) => {
   try {
@@ -69,7 +70,7 @@ const createOrder = async (req, res) => {
     `;
 
     await sendEmail({
-      to: "horlarmeydeileh50@gmail.com",
+      to: `${adminEmail}`,
       subject: "New Order Created",
       html: adminEmailHtml,
     });
@@ -140,7 +141,7 @@ const paystackWebhook = async (req, res) => {
           `;
 
       await sendEmail({
-        to: "horlarmeydeileh50@gmail.com",
+        to: `${adminEmail}`,
         subject: "Order Payment Confirmed",
         html: adminPaymentEmailHtml,
       });
