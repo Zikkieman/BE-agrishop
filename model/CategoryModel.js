@@ -4,15 +4,13 @@ const categorySchema = new mongoose.Schema(
   {
     category: {
       type: String,
-      unique: true,
+      unique: true, // This is sufficient to enforce uniqueness
       required: true,
       trim: true,
     },
   },
   { timestamps: true }
 );
-
-categorySchema.index({ category: 1 }, { unique: true });
 
 categorySchema.pre("findOneAndDelete", async function (next) {
   const categoryId = this.getQuery()._id;
