@@ -12,8 +12,6 @@ const tagSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-tagSchema.index({ tag: 1 }, { unique: true });
-
 tagSchema.pre("findOneAndDelete", async function (next) {
   const tagId = this.getQuery()._id;
   await mongoose
