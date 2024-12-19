@@ -20,6 +20,7 @@ const port = 5000;
 const allowedOrigins = [
   "http://localhost:5173",
   "https://agrishop-five.vercel.app",
+  "https://www.aoaproduce.com",
 ];
 
 app.use(
