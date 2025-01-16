@@ -1,8 +1,9 @@
-const paystackApiKey = process.env.PAYSTACK_SECRET_KEY;
-const paystackBaseUrl = process.env.PAYSTACK_BASEURL;
 const axios = require("axios");
 const crypto = require("crypto");
 const { events } = require("../../model/ProductModel");
+const paystackApiKey = process.env.PAYSTACK_SECRET_KEY;
+const paystackBaseUrl = process.env.PAYSTACK_BASEURL;
+const paystackLiveSecretKey = process.env.PAYSTACK_LIVE_KEY;
 
 const initPayment = async (req, res) => {
   const { email, amount } = req.body;

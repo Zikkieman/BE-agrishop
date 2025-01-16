@@ -2,6 +2,8 @@ const { default: axios } = require("axios");
 const Order = require("../../model/OrderModel");
 const paystackApiKey = process.env.PAYSTACK_SECRET_KEY;
 const paystackBaseUrl = process.env.PAYSTACK_BASEURL;
+const paystackLiveSecretKey = process.env.PAYSTACK_LIVE_KEY;
+
 const crypto = require("crypto");
 const { sendEmail } = require("../../middleware/SendMail");
 const Cart = require("../../model/CartModel");
@@ -20,7 +22,7 @@ const createOrder = async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer ${paystackApiKey}`,
+          Authorization: `Bearer ${paystackLiveSecretKey}`,
           "Content-Type": "application/json",
         },
       }
@@ -87,7 +89,7 @@ const createOrder = async (req, res) => {
 };
 
 const paystackWebhook = async (req, res) => {
-  const secret = paystackApiKey;
+  const secret = paystackLiveSecretKey;
   const paystackSignature = req.headers["x-paystack-signature"];
 
   const hash = crypto
@@ -100,6 +102,8 @@ const paystackWebhook = async (req, res) => {
   }
 
   const event = req.body;
+
+  console.log(event);
 
   try {
     if (event.event === "charge.success") {
